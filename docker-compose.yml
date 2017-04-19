@@ -1,27 +1,30 @@
-concourse-db:
-  image: postgres:9.5
-  env_file: '.postgres-env'
-  environment:
-    PGDATA: /database
+version: '3'
+services:
 
-concourse-web:
-  image: concourse/concourse
-  links: [concourse-db]
-  command: web
-  ports: ["8080:8080"]
-  volumes: ["./keys/web:/concourse-keys"]
-  env_file: 
-    - '.postgres-env'
-    - '.concourse-env'
-  environment:
-    CONCOURSE_POSTGRES_DATA_SOURCE: |-
-      postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@concourse-db:5432/${POSTGRES_DB}?sslmode=disable
+  concourse-db:
+    image: postgres:9.5
+    env_file: '.postgres-env'
+    environment:
+      PGDATA: /database
 
-concourse-worker:
-  image: concourse/concourse
-  privileged: true
-  links: [concourse-web]
-  command: worker
-  volumes: ["./keys/worker:/concourse-keys"]
-  environment:
-    CONCOURSE_TSA_HOST: concourse-web
+  concourse-web:
+    image: concourse/concourse
+    depends_on: [concourse-db]
+    command: web
+    ports: ["8080:8080"]
+    volumes: ["./keys/web:/concourse-keys"]
+    env_file: 
+      - '.postgres-env'
+      - '.concourse-env'
+    environment:
+      CONCOURSE_POSTGRES_DATA_SOURCE: |-
+        postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@concourse-db:5432/${POSTGRES_DB}?sslmode=disable
+
+  concourse-worker:
+    image: concourse/concourse
+    privileged: true
+    depends_on: [concourse-web]
+    command: worker
+    volumes: ["./keys/worker:/concourse-keys"]
+    environment:
+      CONCOURSE_TSA_HOST: concourse-web
