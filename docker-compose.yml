@@ -3,7 +3,7 @@ services:
 
   concourse-db:
     image: postgres:9.5
-    env_file: '.postgres-env'
+    env_file: 'postgres.env'
     environment:
       PGDATA: /database
 
@@ -11,11 +11,11 @@ services:
     image: concourse/concourse
     depends_on: [concourse-db]
     command: web
-    ports: ["8000:8080"]
+    ports: ["8080:8080"]
     volumes: ["./keys/web:/concourse-keys"]
-    env_file: 
-      - '.postgres-env'
-      - '.concourse-env'
+    env_file:
+      - 'postgres.env'
+      - 'concourse.env'
     environment:
       CONCOURSE_POSTGRES_DATA_SOURCE: |-
         postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@concourse-db:5432/${POSTGRES_DB}?sslmode=disable
