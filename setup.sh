@@ -2,8 +2,8 @@
 
 set -e
 
-lpass show 8953247532597087321 --notes | grep POSTGRES > postgres.env
-lpass show 8953247532597087321 --notes | grep CONCOURSE > concourse.env
+lpass show 8953247532597087321 --notes | grep ^POSTGRES > postgres.env
+lpass show 8953247532597087321 --notes | grep ^CONCOURSE > concourse.env
 
 PSQL_DB=$(lpass show 8953247532597087321 --notes | grep POSTGRES_DB | awk -F '=' '{print $2}')
 PSQL_USER=$(lpass show 8953247532597087321 --notes | grep POSTGRES_USER | awk -F '=' '{print $2}')
