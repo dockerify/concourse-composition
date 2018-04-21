@@ -46,7 +46,7 @@ services:
     environment:
       CONCOURSE_TSA_HOST: concourse-web
     deploy:
-      replicas: 1
+      replicas: 4
       restart_policy:
         condition: on-failure
         delay: 5s
