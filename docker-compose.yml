@@ -2,10 +2,10 @@ version: '3'
 
 services:
   concourse-db:
-    image: postgres:9.6
+    image: postgres
     env_file: '.postgres.env'
     environment:
-      PGDATA: /database
+    - PGDATA=/database
     deploy:
       replicas: 1
       restart_policy:
@@ -16,16 +16,15 @@ services:
       placement:
         constraints: [ node.role == manager ]
 
-  concourse-web:
-    image: concourse/concourse
-    links: [concourse-db]
+  concourse:
+    image: concourse/concourse:4.2.2
     depends_on: [concourse-db]
-    command: web
+    command: quickstart
+    privileged: true
     ports: ["8080:8080"]
-    volumes: ["./keys/web:/concourse-keys"]
     restart: unless-stopped # required so that it retries until conocurse-db comes up
-    env_file:
-      - '.concourse.env'
+    env_file: '.concourse.env'
+
     deploy:
       replicas: 1
       restart_policy:
@@ -35,22 +34,3 @@ services:
         window: 120s
       placement:
         constraints: [node.role == manager ]
-
-  concourse-worker:
-    image: concourse/concourse
-    privileged: true
-    links: [concourse-web]
-    depends_on: [concourse-web]
-    command: worker
-    volumes: ["./keys/worker:/concourse-keys"]
-    environment:
-      CONCOURSE_TSA_HOST: concourse-web
-    deploy:
-      replicas: 4
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
-      placement:
-        constraints: [ node.role == worker ]
