@@ -19,9 +19,9 @@ services:
   concourse:
     image: concourse/concourse:4.2.2
     depends_on: [concourse-db]
-    command: quickstart
+    command: quickstart --external-url="${CONCOURSE_EXTERNAL_URL}"
     privileged: true
-    ports: ["8080:8080"]
+    ports: ["8888:8080"]
     restart: unless-stopped # required so that it retries until conocurse-db comes up
     env_file: '.concourse.env'
 

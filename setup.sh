@@ -2,7 +2,7 @@
 
 set -e
 
-function run_setup() {
+function run_creds() {
   lpass show 186280693047662128 --notes | grep ^POSTGRES > .postgres.env
   lpass show 186280693047662128 --notes | grep ^CONCOURSE > .concourse.env
 
@@ -15,8 +15,17 @@ function run_setup() {
   export POSTGRES_PASSWORD=${PSQL_PASSWORD}
 }
 
+function run_overwrite() {
+  touch docker-compose.yml
+  yq write docker-compose.tmpl.yml \
+    services.concourse.command \
+    "quickstart --external-url=$(grep CONCOURSE_EXTERNAL_URL < .concourse.env | awk -F '=' '{print $2}')" \
+    > docker-compose.yml
+}
+
 function main() {
-  run_setup
+  run_creds
+  run_overwrite
 }
 
 main
