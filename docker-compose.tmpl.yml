@@ -17,14 +17,13 @@ services:
         constraints: [ node.role == manager ]
 
   concourse:
-    image: concourse/concourse:5.4.0
+    image: concourse/concourse:5.5.1
     depends_on: [concourse-db]
     command: quickstart --external-url="${CONCOURSE_EXTERNAL_URL}"
     privileged: true
     ports: ["8888:8080"]
     restart: unless-stopped # required so that it retries until conocurse-db comes up
     env_file: '.concourse.env'
-
     deploy:
       replicas: 1
       restart_policy:
