@@ -17,7 +17,7 @@ services:
         constraints: [ node.role == manager ]
 
   concourse:
-    image: concourse/concourse:5.5.1
+    image: concourse/concourse:5.8.0
     depends_on: [concourse-db]
     command: quickstart --external-url="${CONCOURSE_EXTERNAL_URL}"
     privileged: true
